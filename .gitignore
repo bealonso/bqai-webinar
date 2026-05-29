@@ -4,3 +4,4 @@
 # Ignore temporary transcoding files
 *.temp.wav
 *.temp.mp3
+**/__pycache__/
