@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Search & Embeddings — Premium Presentation Deck</title>
+    <meta name="description" content="Google-branded, premium interactive slide deck on Vector Search, Embeddings, RAG, and Hybrid Search.">
+    <!-- Google Fonts: Outfit & Roboto Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --google-blue: #1a73e8;
+            --google-red: #ea4335;
+            --google-yellow: #fbbc05;
+            --google-green: #34a853;
+            --text-primary: #1f1f1f;
+            --text-secondary: #5f6368;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --border-color: #dadce0;
+            --sidebar-width: 360px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Main presentation container */
+        #app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            background-color: var(--bg-primary);
+        }
+
+        /* Top Bar */
+        header {
+            height: 64px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background-color: var(--bg-primary);
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .google-logo {
+            display: flex;
+            gap: 2px;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-g { color: var(--google-blue); }
+        .logo-o1 { color: var(--google-red); }
+        .logo-o2 { color: var(--google-yellow); }
+        .logo-g2 { color: var(--google-blue); }
+        .logo-l { color: var(--google-green); }
+        .logo-e { color: var(--google-red); }
+
+        .doc-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-left: 1px solid var(--border-color);
+            padding-left: 12px;
+            margin-left: 12px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: #b0b4b9;
+        }
+
+        .btn-primary {
+            background-color: var(--google-blue);
+            color: white;
+            border-color: var(--google-blue);
+        }
+
+        .btn-primary:hover {
+            background-color: #1557b0;
+            border-color: #1557b0;
+        }
+
+        /* Slide Area */
+        .slide-viewport {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--bg-secondary);
+        }
+
+        .slide-wrapper {
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 48px 64px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Slide Content */
+        .slide {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Slide Types */
+        .slide-cover {
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .slide-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--google-blue) 25%, var(--google-red) 25%, var(--google-red) 50%, var(--google-yellow) 50%, var(--google-yellow) 75%, var(--google-green) 75%);
+            opacity: 0.08;
+            clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+        }
+
+        .section-badge {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--google-blue);
+            margin-bottom: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-title {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Standard Slide Layouts */
+        .slide-header {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .slide-header h2 {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            gap: 40px;
+            position: relative;
+        }
+
+        /* Two column layout */
+        .col-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .col-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Typography and Lists */
+        ul.premium-list {
+            list-style: none;
+        }
+
+        ul.premium-list li {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            position: relative;
+            padding-left: 24px;
+        }
+
+        ul.premium-list li::before {
+            content: '•';
+            color: var(--google-blue);
+            font-size: 24px;
+            position: absolute;
+            left: 0;
+            top: -4px;
+        }
+
+        ul.premium-list li strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .cards-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .card:hover {
+            border-color: var(--google-blue);
+            background-color: #ffffff;
+            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.06);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .card-blue .card-icon { background-color: var(--google-blue); }
+        .card-red .card-icon { background-color: var(--google-red); }
+        .card-yellow .card-icon { background-color: var(--google-yellow); }
+        .card-green .card-icon { background-color: var(--google-green); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Interactive Diagrams */
+        .diagram-container {
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .vector-space-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 180px;
+            position: relative;
+        }
+
+        .scatter-plot {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-left: 2px solid var(--text-secondary);
+            border-bottom: 2px solid var(--text-secondary);
+        }
+
+        .scatter-node {
+            position: absolute;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .scatter-node.blue { border-color: var(--google-blue); color: var(--google-blue); }
+        .scatter-node.red { border-color: var(--google-red); color: var(--google-red); }
+        .scatter-node.green { border-color: var(--google-green); color: var(--google-green); }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+        }
+
+        .flow-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: 20px;
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .step-num {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 12px;
+            transition: all var(--transition-speed);
+        }
+
+        .flow-step.active .step-num {
+            background-color: var(--google-blue);
+            border-color: var(--google-blue);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.15);
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Math Panel */
+        .math-panel {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 16px 20px;
+            width: 100%;
+            font-size: 15px;
+            margin-top: 12px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .math-highlight {
+            color: #4ec9b0;
+            font-weight: 500;
+        }
+
+        /* Slide Footer */
+        .slide-footer {
+            margin-top: 24px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Presenter Sidebar */
+        #presenter-notes-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            z-index: 5;
+            transition: width var(--transition-speed) ease;
+        }
+
+        #presenter-notes-sidebar.hidden {
+            width: 0;
+            overflow: hidden;
+            border-left: none;
+        }
+
+        .sidebar-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .sidebar-content p {
+            margin-bottom: 12px;
+        }
+
+        /* Bottom Navigation Bar */
+        .navigation-bar {
+            height: 56px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background-color: var(--bg-primary);
+            z-index: 10;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-indicator {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            #presenter-notes-sidebar {
+                position: absolute;
+                right: 0;
+                top: 64px;
+                height: calc(100% - 120px);
+                box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main App Window -->
+    <div id="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <div class="google-logo">
+                    <span class="logo-g">G</span>
+                    <span class="logo-o1">o</span>
+                    <span class="logo-o2">o</span>
+                    <span class="logo-g2">g</span>
+                    <span class="logo-l">l</span>
+                    <span class="logo-e">e</span>
+                </div>
+                <div class="doc-title">Vector Search & Embeddings Course</div>
+            </div>
+            <div class="header-controls">
+                <button class="btn" id="toggle-notes-btn">
+                    📝 Toggle Speaker Notes
+                </button>
+                <button class="btn btn-primary" id="fullscreen-btn">
+                    🖥️ Fullscreen
+                </button>
+            </div>
+        </header>
+
+        <!-- Slide Viewport -->
+        <div class="slide-viewport">
+            <div class="slide-wrapper" id="slide-wrapper">
+                
+                <!-- ==================== INTRO SESSION ==================== -->
+                <!-- Slide 1: Title Slide -->
+                <div class="slide active" data-notes-index="0">
+                    <div class="slide-cover">
+                        <div class="section-badge">
+                            <span class="logo-g">■</span> Course Presentation Deck
+                        </div>
+                        <h1 class="slide-title">Vector Search & Embeddings</h1>
+                        <p class="slide-subtitle">Building the Next Generation of AI-Powered Semantic Search</p>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Google Cloud — Next Gen Search</span>
+                        <span>Slide 1 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Evolution of Search -->
+                <div class="slide" data-notes-index="1">
+                    <div class="slide-header">
+                        <h2>Beyond Keywords: Modern Search</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Multimodal Search:</strong> Consuming text, audio, visual, and metadata queries.</li>
+                                <li><strong>Semantic Context:</strong> Inferring meaning and context to present robust recommendations.</li>
+                                <li><strong>Information Verification:</strong> Utilizing Retrieval Augmented Generation (RAG) to anchor AI models in verifiable truths.</li>
+                                <li><strong>AI Action Agents:</strong> Elevating systems from simple answers to executing booking, mapping, and task consolidation.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="cards-grid">
+                                <div class="card card-blue">
+                                    <div class="card-icon">M</div>
+                                    <div class="card-title">Multimodal</div>
+                                    <div class="card-desc">Combines image, audio, and textual queries seamlessly.</div>
+                                </div>
+                                <div class="card card-green">
+                                    <div class="card-icon">R</div>
+                                    <div class="card-title">RAG</div>
+                                    <div class="card-desc">Fact-checks and grounds LLM responses in real-time databases.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Google Cloud — Course Intro</span>
+                        <span>Slide 2 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Course Roadmap -->
+                <div class="slide" data-notes-index="2">
+                    <div class="slide-header">
+                        <h2>Course Roadmap</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-blue">
+                                <div class="card-title">Part 1: Core Technologies</div>
+                                <div class="card-desc">
+                                    <p style="margin-bottom: 8px;">Explore the foundational mechanics enabling intelligent search:</p>
+                                    <ul class="premium-list" style="margin-top: 8px;">
+                                        <li style="margin-bottom: 8px; font-size: 13px;">Mechanics of Vector Search (Encode, Index, Search)</li>
+                                        <li style="margin-bottom: 8px; font-size: 13px;">Text Representation & Embeddings</li>
+                                        <li style="margin-bottom: 0; font-size: 13px;">Pre-trained APIs vs Neural Networks</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card card-green">
+                                <div class="card-title">Part 2: Practical Applications</div>
+                                <div class="card-desc">
+                                    <p style="margin-bottom: 8px;">Build custom corporate architectures on Google Cloud:</p>
+                                    <ul class="premium-list" style="margin-top: 8px;">
+                                        <li style="margin-bottom: 8px; font-size: 13px;">Vertex AI Vector Search Deployment</li>
+                                        <li style="margin-bottom: 8px; font-size: 13px;">RAG Framework to mitigate Hallucinations</li>
+                                        <li style="margin-bottom: 0; font-size: 13px;">Hybrid Search (Blending Sparse & Dense)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Google Cloud — Course Intro</span>
+                        <span>Slide 3 of 26</span>
+                    </div>
+                </div>
+
+                <!-- ==================== SESSION 1 ==================== -->
+                <!-- Slide 4: Section Cover -->
+                <div class="slide" data-notes-index="3">
+                    <div class="slide-cover">
+                        <div class="section-badge">Session 01</div>
+                        <h1 class="slide-title">Vector Search</h1>
+                        <p class="slide-subtitle">Understanding the core concepts, business value, and high-level process.</p>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 4 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Real World Examples -->
+                <div class="slide" data-notes-index="4">
+                    <div class="slide-header">
+                        <h2>Semantic Value in Business</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <h3 style="margin-bottom: 12px; color: var(--google-blue);">Customer Experiences</h3>
+                            <ul class="premium-list">
+                                <li>Visual product discovery using photos or visual memories.</li>
+                                <li>Finding music, songs, or lines with generic descriptions.</li>
+                                <li>Complex criteria filtering (location, time, budget, and intent).</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <h3 style="margin-bottom: 12px; color: var(--google-green);">Internal Operations</h3>
+                            <ul class="premium-list">
+                                <li>Fast extraction of cross-departmental reference guidelines.</li>
+                                <li>Instant cataloging and semantic identification of assets.</li>
+                                <li>Mapping subject matter expertise across thousands of pages.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 5 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Keyword vs Semantic -->
+                <div class="slide" data-notes-index="5">
+                    <div class="slide-header">
+                        <h2>Keyword vs. Semantic Search</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-red">
+                                <div class="card-title">Traditional Keyword Search</div>
+                                <div class="card-desc">
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="margin-bottom: 8px; font-size: 14px;">❌ Matches exact characters and string patterns.</li>
+                                        <li style="margin-bottom: 8px; font-size: 14px;">❌ Fails to identify synonyms, intent, or context.</li>
+                                        <li style="margin-bottom: 0; font-size: 14px;">❌ E.g., searching "summer tops" misses "swimming suits" or "beach wear".</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card card-blue">
+                                <div class="card-title">Semantic Vector Search</div>
+                                <div class="card-desc">
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="margin-bottom: 8px; font-size: 14px;">✅ Understands overall context and meaning.</li>
+                                        <li style="margin-bottom: 8px; font-size: 14px;">✅ Encodes queries into high-dimensional dense spaces.</li>
+                                        <li style="margin-bottom: 0; font-size: 14px;">✅ Delivers relevant, related results regardless of literal keywords.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 6 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 7: How it Works -->
+                <div class="slide" data-notes-index="6">
+                    <div class="slide-header">
+                        <h2>How Vector Search Works</h2>
+                    </div>
+                    <div class="slide-body" style="align-items: center;">
+                        <div class="flow-steps">
+                            <div class="flow-step active">
+                                <div class="step-num">1</div>
+                                <div class="step-title">Encode</div>
+                                <div class="step-desc">Convert unstructured media (text, images, audio) into mathematical vectors using Embedding Models.</div>
+                            </div>
+                            <div class="flow-step active">
+                                <div class="step-num">2</div>
+                                <div class="step-title">Index</div>
+                                <div class="step-desc">Organize vectors in a high-performance search space to enable lightning-fast nearest neighbor lookups.</div>
+                            </div>
+                            <div class="flow-step active">
+                                <div class="step-num">3</div>
+                                <div class="step-title">Search</div>
+                                <div class="step-desc">Execute similarity queries on the vector index to return semantically closest objects.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 7 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Two Perspectives -->
+                <div class="slide" data-notes-index="7">
+                    <div class="slide-header">
+                        <h2>Development vs. Serving Phases</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-blue">
+                                <div class="card-title">🛠️ Development (Build-Time)</div>
+                                <div class="card-desc">
+                                    <ul class="premium-list">
+                                        <li>Generate high-dimensional embeddings for raw assets.</li>
+                                        <li>Build a scalable vector index matching specific distance metrics.</li>
+                                        <li>Deploy index to custom serverless endpoints.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card card-green">
+                                <div class="card-title">⚡ Serving (Run-Time)</div>
+                                <div class="card-desc">
+                                    <ul class="premium-list">
+                                        <li>Convert live user query into a dense vector.</li>
+                                        <li>Query the index to locate nearest neighbors in milliseconds.</li>
+                                        <li>Serve verified related results to downstream apps.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 8 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 9: The Book Index Analogy -->
+                <div class="slide" data-notes-index="8">
+                    <div class="slide-header">
+                        <h2>The Book Index Analogy</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                                        <th style="padding: 12px 0;">Step</th>
+                                        <th style="padding: 12px 0;">Search Terminology</th>
+                                        <th style="padding: 12px 0;">Book Analogy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px 0; font-weight: 600; color: var(--google-blue);">1</td>
+                                        <td style="padding: 12px 0;">Encoding</td>
+                                        <td style="padding: 12px 0; color: var(--text-secondary);">Extracting concepts / keywords from pages.</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px 0; font-weight: 600; color: var(--google-green);">2</td>
+                                        <td style="padding: 12px 0;">Indexing</td>
+                                        <td style="padding: 12px 0; color: var(--text-secondary);">Compiling alphabetized mapping index.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; font-weight: 600; color: var(--google-yellow);">3</td>
+                                        <td style="padding: 12px 0;">Searching</td>
+                                        <td style="padding: 12px 0; color: var(--text-secondary);">Flipping directly to mapped page numbers.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-right" style="justify-content: flex-start; padding-top: 12px;">
+                            <div class="card card-yellow">
+                                <div class="card-title">Key Vector Challenges</div>
+                                <div class="card-desc">
+                                    <p><strong>1. Representation:</strong> Capturing semantics quantitatively.</p>
+                                    <p><strong>2. Scalability:</strong> Building spaces to search billions of objects fast.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Vector Search Basics</span>
+                        <span>Slide 9 of 26</span>
+                    </div>
+                </div>
+
+                <!-- ==================== SESSION 2 ==================== -->
+                <!-- Slide 10: Section Cover -->
+                <div class="slide" data-notes-index="9">
+                    <div class="slide-cover">
+                        <div class="section-badge">Session 02</div>
+                        <h1 class="slide-title">Embeddings</h1>
+                        <p class="slide-subtitle">Turning unstructured media into dense, mathematically computable representations.</p>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 10 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 11: Text to Numbers Challenge -->
+                <div class="slide" data-notes-index="10">
+                    <div class="slide-header">
+                        <h2>The Challenge of Representation</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Representing Semantics:</strong> How to transform human vocabulary into quantitative measurements while keeping contextual meaning intact.</li>
+                                <li><strong>Dense Compatibility:</strong> Compiling information into structures suitable for machine learning models without computational waste.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="card card-blue">
+                                <div class="card-title">Embedding Scope</div>
+                                <div class="card-desc">
+                                    Embedding models are highly versatile. While text is standard, they encode <strong>images, audio, video,</strong> and even <strong>computer code</strong> into unified mathematical coordinates.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 11 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 12: One-Hot Encoding -->
+                <div class="slide" data-notes-index="11">
+                    <div class="slide-header">
+                        <h2>One-Hot Encoding</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>The Technique:</strong> Map every word to its distinct place in a huge, zero-filled vector.</li>
+                                <li><strong>Extreme Sparsity:</strong> For a 20,000+ vocabulary, 99.99% of cells are zeros, causing high resource waste and model overfitting.</li>
+                                <li><strong>No Context:</strong> Every vector is orthogonal; the model has no way to know "dog" and "chase" are semantically related.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="math-panel">
+                                <div># Sentence: "dog chase person"</div>
+                                <div># Vocabulary: [dog, chase, person, my, cat, run]</div>
+                                <div>dog:    [<span class="math-highlight">1</span>, 0, 0, 0, 0, 0]</div>
+                                <div>chase:  [0, <span class="math-highlight">1</span>, 0, 0, 0, 0]</div>
+                                <div>person: [0, 0, <span class="math-highlight">1</span>, 0, 0, 0]</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 12 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 13: Intuition of Embeddings -->
+                <div class="slide" data-notes-index="12">
+                    <div class="slide-header">
+                        <h2>Vector Space Arithmetic</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <div class="diagram-container">
+                                <div class="vector-space-diagram">
+                                    <div class="scatter-plot">
+                                        <div class="scatter-node blue" style="left: 20%; bottom: 60%;">King 👑</div>
+                                        <div class="scatter-node blue" style="left: 35%; bottom: 45%;">Queen 👑</div>
+                                        <div class="scatter-node red" style="left: 15%; bottom: 25%;">Man 🧔</div>
+                                        <div class="scatter-node red" style="left: 32%; bottom: 10%;">Woman 👩</div>
+                                        <div class="scatter-node green" style="left: 75%; bottom: 70%;">Apple 🍎</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-right">
+                            <ul class="premium-list">
+                                <li><strong>Analogous Spacing:</strong> The distance and direction between vectors represent concrete semantics and relationships.</li>
+                                <li><strong>Distributed Representation:</strong> Concepts are spread across multiple dimensions (e.g. height, behavior, royalty).</li>
+                            </ul>
+                            <div class="math-panel" style="margin-top: 8px;">
+                                <div class="math-highlight">King - Man + Woman = Queen</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 13 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 14: Dense vs Sparse -->
+                <div class="slide" data-notes-index="13">
+                    <div class="slide-header">
+                        <h2>Dense vs. Sparse Embeddings</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-red">
+                                <div class="card-title">Sparse Embeddings</div>
+                                <div class="card-desc">
+                                    <p><strong>Dimensions:</strong> Extremely high (e.g. 20,000+ matching vocabulary size).</p>
+                                    <p style="margin-top: 4px;"><strong>Values:</strong> Almost entirely zeros.</p>
+                                    <p style="margin-top: 4px;"><strong>Semantics:</strong> Does not convey similarities or meaning relationships between words.</p>
+                                </div>
+                            </div>
+                            <div class="card card-blue">
+                                <div class="card-title">Dense Embeddings</div>
+                                <div class="card-desc">
+                                    <p><strong>Dimensions:</strong> Compact and compressed (usually 768 to 3072).</p>
+                                    <p style="margin-top: 4px;"><strong>Values:</strong> Floating-point numbers in all dimensions.</p>
+                                    <p style="margin-top: 4px;"><strong>Semantics:</strong> Rich semantic associations; similar concepts group closely together.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 14 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 15: pre-trained embeddings -->
+                <div class="slide" data-notes-index="14">
+                    <div class="slide-header">
+                        <h2>Pre-trained Embedding APIs</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Offload Training Costs:</strong> Developing high-dimensional embedding neural networks requires massive compute resources and datasets.</li>
+                                <li><strong>Google Embedding APIs:</strong> Call simple, highly optimized APIs to generate high-fidelity dense embeddings instantly.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="math-panel">
+                                <div>from google.cloud import aiplatform</div>
+                                <div style="color: #6a9955;"># 1. Initialize Model</div>
+                                <div>model = TextEmbeddingModel.from_pretrained(<span class="math-highlight">"text-embedding-004"</span>)</div>
+                                <div style="color: #6a9955;"># 2. Get Vector</div>
+                                <div>embeddings = model.get_embeddings([<span class="math-highlight">"AI Search"</span>])</div>
+                                <div>vector = embeddings[0].values  <span style="color: #6a9955;"># List of floats</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Embeddings & Representation</span>
+                        <span>Slide 15 of 26</span>
+                    </div>
+                </div>
+
+                <!-- ==================== SESSION 3 ==================== -->
+                <!-- Slide 16: Section Cover -->
+                <div class="slide" data-notes-index="15">
+                    <div class="slide-cover">
+                        <div class="section-badge">Session 03</div>
+                        <h1 class="slide-title">Retrieval Augmented Generation (RAG)</h1>
+                        <p class="slide-subtitle">Combining high-performance vector searches with generative AI models to prevent hallucinations.</p>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Retrieval Augmented Generation</span>
+                        <span>Slide 16 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 17: Grounding Problem -->
+                <div class="slide" data-notes-index="16">
+                    <div class="slide-header">
+                        <h2>The Grounding Problem</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Frozen Pre-training:</strong> Standalone Large Language Models (LLMs) only know information up to their last training cutoff.</li>
+                                <li><strong>Information Gap:</strong> They lack access to corporate internal roadmaps, specific user files, or real-time API data.</li>
+                                <li><strong>AI Hallucination:</strong> LLMs confidently present incorrect or completely fabricated data due to a lack of facts.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="card card-red">
+                                <div class="card-title">Why Standalone LLMs Fail</div>
+                                <div class="card-desc">
+                                    They are incapable of requesting missing context, cannot natively verify their training sources, and assume that user prompt assertions are always true.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Retrieval Augmented Generation</span>
+                        <span>Slide 17 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 18: Hallucination Solutions -->
+                <div class="slide" data-notes-index="17">
+                    <div class="slide-header">
+                        <h2>Solutions to Hallucination</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-blue">
+                                <div class="card-title">Fine-Tuning</div>
+                                <div class="card-desc">Retraining models with new specific data. Highly customized, but computationally expensive and requires continuous manual pipeline management.</div>
+                            </div>
+                            <div class="card card-yellow">
+                                <div class="card-title">Prompt Engineering</div>
+                                <div class="card-desc">Carefully shaping standard prompt instructions. Easy to implement, but limited by context window sizes and does not scale cleanly across complex files.</div>
+                            </div>
+                            <div class="card card-green" style="grid-column: span 2;">
+                                <div class="card-title">RAG + Vector Search (Highly Recommended)</div>
+                                <div class="card-desc">Leverages high-performance Vector Search to extract exact factual contexts in real-time and inject them straight into the prompt template. Scalable, secure, and extremely cost-effective.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Retrieval Augmented Generation</span>
+                        <span>Slide 18 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 19: RAG Analogy -->
+                <div class="slide" data-notes-index="18">
+                    <div class="slide-header">
+                        <h2>The "Open-Book Exam" Analogy</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Closed-Book (Without RAG):</strong> The model relies solely on memorized facts from initial training, guessing when uncertain.</li>
+                                <li><strong>Open-Book (With RAG):</strong> The system queries a reliable textbook/library (Vector Database) in real-time to locate precise reference paragraphs before formulating its response.</li>
+                                <li><strong>Vector Search's Role:</strong> Serves as the super-fast librarian, extracting the most relevant information in milliseconds.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="diagram-container">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 48px; margin-bottom: 8px;">📖 ⇄ 🤖</div>
+                                    <div style="font-weight: 600;">Grounded Search Agent</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Retrieval Augmented Generation</span>
+                        <span>Slide 19 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 20: Architecture Comparison -->
+                <div class="slide" data-notes-index="19">
+                    <div class="slide-header">
+                        <h2>RAG Technical Architecture</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <h3 style="margin-bottom: 12px; color: var(--google-blue);">The RAG Pipeline</h3>
+                            <ul class="premium-list">
+                                <li><strong>Ingestion:</strong> Convert PDF/docs to dense embeddings and insert them into a high-performance index.</li>
+                                <li><strong>Query Routing:</strong> Encode user query $\rightarrow$ execute K-Nearest Neighbors (KNN) on the vector database.</li>
+                                <li><strong>Synthesis:</strong> Ground the prompt by appending the retrieved paragraphs and pass it to the Gemini LLM.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="math-panel" style="font-size: 13px;">
+                                <div>User Query: "Current travel alert?"</div>
+                                <div>1. Search Vector Index: k=1</div>
+                                <div>2. Found Paragraph: "US Embassy alert for Italy on May 25..."</div>
+                                <div>3. Grounded Prompt:</div>
+                                <div style="color: #ea4335;">"Answer query using this reference context: [...]"</div>
+                                <div>4. Gemini Output: "According to the alert on May 25..."</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Retrieval Augmented Generation</span>
+                        <span>Slide 20 of 26</span>
+                    </div>
+                </div>
+
+                <!-- ==================== SESSION 4 ==================== -->
+                <!-- Slide 21: Section Cover -->
+                <div class="slide" data-notes-index="20">
+                    <div class="slide-cover">
+                        <div class="section-badge">Session 04</div>
+                        <h1 class="slide-title">Hybrid Search</h1>
+                        <p class="slide-subtitle">Blending the contextual understanding of dense vectors with the precise matching of sparse tokens.</p>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 21 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 22: The Hybrid Challenge -->
+                <div class="slide" data-notes-index="21">
+                    <div class="slide-header">
+                        <h2>Why Hybrid is Crucial</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="cards-grid">
+                            <div class="card card-blue">
+                                <div class="card-title">Dense / Semantic Search</div>
+                                <div class="card-desc">
+                                    <p>💡 Captures overall user intent, concepts, and synonymous relationships.</p>
+                                    <p style="margin-top: 6px;">❌ Fails on exact numbers, custom product IDs, new SKUs, barcodes, or brand new names outside the training dataset.</p>
+                                </div>
+                            </div>
+                            <div class="card card-yellow">
+                                <div class="card-title">Sparse / Token-Based Search</div>
+                                <div class="card-desc">
+                                    <p>💡 Captures exact keyword alignments and out-of-domain words perfectly.</p>
+                                    <p style="margin-top: 6px;">❌ Lacks conceptual understanding; missing synonyms completely (e.g. ignores "youth" if searching for "kids").</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 22 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 23: Sparse Vector Mechanics -->
+                <div class="slide" data-notes-index="22">
+                    <div class="slide-header">
+                        <h2>Keyword Vector Mechanics</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Token-Based Extraction:</strong> Break raw texts down into discrete tokens, counting and mapping occurrence frequencies.</li>
+                                <li><strong>TF-IDF Weighting:</strong> Assesses a word's importance relative to the collection, prioritizing rare words and discounting common conjunctions.</li>
+                                <li><strong>Organizing Space:</strong> Create a high-dimensional sparse space where documents with similar keyword footprints align closely.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="card card-blue">
+                                <div class="card-title">Term Frequency Inverse Document Frequency</div>
+                                <div class="card-desc">
+                                    TF-IDF balances local term occurrences against overall corpus frequencies to elevate the most unique descriptive search parameters.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 23 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 24: RRF Re-ranking -->
+                <div class="slide" data-notes-index="23">
+                    <div class="slide-header">
+                        <h2>Reciprocal Rank Fusion (RRF)</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>The Fusion Challenge:</strong> Merging separate rank outputs from keyword and semantic engines cleanly.</li>
+                                <li><strong>The RRF Algorithm:</strong> Evaluates the reciprocal of each object's rank ($1 / \text{rank}$) across the separate lists.</li>
+                                <li><strong>Optimal Prioritization:</strong> Promotes items that rank consistently well in both systems, or show an exceptional high score in one.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="math-panel">
+                                <div># RRF Scoring Formula</div>
+                                <div style="font-size: 16px; color: #4ec9b0; text-align: center; margin: 12px 0;">
+                                    Score(d) = Σ<sub>m ∈ M</sub> 1 / (k + r<sub>m</sub>(d))
+                                </div>
+                                <div style="font-size: 12px; color: #888;">Where k is a constant (e.g., 60) and r<sub>m</sub> is the rank in list m.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 24 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 25: Implementation on Google Cloud -->
+                <div class="slide" data-notes-index="24">
+                    <div class="slide-header">
+                        <h2>Vertex AI Hybrid Search</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Streamlined Operations:</strong> Vertex AI Abstracts database complexities, merging dense and sparse indices into one simple endpoint.</li>
+                                <li><strong>Code workflow:</strong>
+                                    <ol style="margin-left: 24px; margin-top: 8px; line-height: 1.6;">
+                                        <li>Compute TF-IDF sparse vector.</li>
+                                        <li>Get Gemini dense vector.</li>
+                                        <li>Package into a single Hybrid Query object.</li>
+                                    </ol>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="math-panel" style="font-size: 12px;">
+                                <div># 1. Build Hybrid Search Query</div>
+                                <div>query = aiplatform.VectorSearchEndpoint.HybridQuery(</div>
+                                <div>  dense_embedding=dense_vector,</div>
+                                <div>  sparse_embedding=sparse_vector,</div>
+                                <div>  rrf_k=60</div>
+                                <div>)</div>
+                                <div># 2. Call Unified Endpoint</div>
+                                <div>response = endpoint.hybrid_search([query])</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 25 of 26</span>
+                    </div>
+                </div>
+
+                <!-- Slide 26: Interpreting Results -->
+                <div class="slide" data-notes-index="25">
+                    <div class="slide-header">
+                        <h2>Interpreting Hybrid Results</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="col-left">
+                            <ul class="premium-list">
+                                <li><strong>Top Results:</strong> Align on both keyword and semantic indices (e.g. *"Google Blue Kids Sunglasses"*).</li>
+                                <li><strong>Semantic-Only Fits:</strong> Rank highly even without precise keyword matching (e.g., *"Google White Classic Youth Tee"* matches "kids" conceptually).</li>
+                                <li><strong>Broad Success:</strong> Merges precision lookup speed with contextual understanding.</li>
+                            </ul>
+                        </div>
+                        <div class="col-right">
+                            <div class="diagram-container" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                                <div style="font-weight: 600; font-size: 14px; color: var(--google-blue);">SEARCH QUERY: "Kids glasses"</div>
+                                <div style="background: white; border-left: 4px solid var(--google-green); padding: 8px; width: 100%; font-size: 12px; border-radius: 4px;">
+                                    <strong>1. Google Blue Kids Sunglasses</strong> (Matches both)
+                                </div>
+                                <div style="background: white; border-left: 4px solid var(--google-blue); padding: 8px; width: 100%; font-size: 12px; border-radius: 4px;">
+                                    <strong>2. Google Youth Sun Shades</strong> (Semantically High)
+                                </div>
+                                <div style="background: white; border-left: 4px solid var(--google-red); padding: 8px; width: 100%; font-size: 12px; border-radius: 4px;">
+                                    <strong>3. Red Kids Pin</strong> (Keyword-Only Match)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span>Hybrid Search Optimization</span>
+                        <span>Slide 26 of 26</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <div class="nav-buttons">
+                <button class="btn" id="prev-btn">◀ Previous Slide</button>
+                <button class="btn" id="next-btn">Next Slide ▶</button>
+            </div>
+            <div class="nav-indicator" id="nav-indicator">
+                Slide 1 of 26
+            </div>
+        </div>
+    </div>
+
+    <!-- Speaker Notes Panel -->
+    <div id="presenter-notes-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <span>📝</span> Speaker Reference Notes
+            </div>
+        </div>
+        <div class="sidebar-content" id="notes-content">
+            <!-- Loaded dynamically via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Audio Element for future voice over support if needed -->
+    <script>
+        // Multi-turn speaker transcripts derived from transcripts.csv
+        const speakerNotes = [
+            // Slide 1: Intro Title
+            `<p><strong>Welcome & Introduction:</strong></p>
+            <p>Curious how AI-powered search truly understands your queries? And ready to build advanced search for your business?</p>
+            <p>Welcome to the course <strong>Vector Search and Embeddings</strong>, where you discover the answers to these questions and learn to build the next generation of search using Google's cutting-edge technologies.</p>`,
+            
+            // Slide 2: Evolution of Search
+            `<p><strong>AI-Powered Search in Action:</strong></p>
+            <p>Consider these examples of AI-powered search in action.</p>
+            <p>Planning a vacation? Imagine seeing a picture and asking Google, "where is this? Plan a 10-day vacation in this area." This is multimodal search, potentially combining image, text, and audio inputs. It also requires the search engine to understand semantic meaning and context to make recommendations.</p>
+            <p>Narrow your vacation options down to Italy? Ask Google for a 10-minute video introducing the history of Italy, which is a factual keyword search.</p>
+            <p>Want to book travel logistics but need to check the company's policy on time off and international travel? Ask Search to cross-reference your paid time off, roadmap tasks, and potential safety alerts. This highlights the need for field knowledge and information verification, possibly facilitated by RAG, Retrieval Augmented Generation, or real-time fact-checking.</p>
+            <p>Satisfied with the proposed travel itinerary? Ask Google to compare prices and book hotels. This demonstrates the power of AI agents integrated into Search.</p>
+            <p>Fueled by AI, Search has exploded beyond simple question-and-answer requests and evolved into multimodal, conversational, and action-oriented AI agent systems.</p>`,
+            
+            // Slide 3: Course Roadmap
+            `<p><strong>Course Roadmap & Value:</strong></p>
+            <p>This course explores vector search and embeddings, the core technologies that power these smart experiences, by understanding the meaning of user requests.</p>
+            <p>Importantly, you will learn how to build your own intelligent search solutions using Vertex AI Vector Search, a cutting-edge tool from Google.</p>
+            <p>This course is structured into two main parts: the underlying technologies and their practical applications.</p>
+            <p>Initially, you explore the mechanics of vector search. This comprehensive technology can be broken down into three key stages: Encode, Index, and Search. Following this, you use Vertex AI Vector Search to develop your own semantic search engine.</p>
+            <p>Building on this foundation, you further investigate a key application of vector search: RAG. You discover how RAG mitigates AI hallucinations. Additionally, you learn how to leverage the strengths of both semantic and keyword searches to create a robust hybrid search for enhanced information retrieval.</p>
+            <p>Ultimately, you gain practical experience in constructing your own hybrid search engine.</p>
+            <p>Eager to unlock the secrets of Search and build your own intelligent search engine? Let's begin!</p>`,
+            
+            // Slide 4: Vector Search Cover
+            `<p><strong>Vector Search Overview:</strong></p>
+            <p>Let's discover Vector Search, the technology enabling search to understand the true meaning of your queries.</p>
+            <p>So, what is Vector Search? You likely use it daily without realizing it.</p>`,
+            
+            // Slide 5: Real World Examples
+            `<p><strong>Use Cases:</strong></p>
+            <p>Imagine finding a product from a vague visual memory, identifying a song and artist with just a few recalled lyrics, or seeking vacation recommendations based on a set of comprehensive criteria like location, budget, and travel dates.</p>
+            <p>For businesses, you may want to develop multimodal search experiences for both external customer and partner interactions and internal knowledge management.</p>
+            <p>Imagine empowering customers to find visually similar products, conduct searches through natural conversations, and receive highly personalized recommendations.</p>
+            <p>Internally, it enables knowledge workers to efficiently locate relevant documentation, identify subject matter experts, and discover valuable cross-team use cases.</p>
+            <p>Vector Search, a technology that focuses on semantic similarity, can be used to perform all of these tasks.</p>`,
+            
+            // Slide 6: Keyword vs Semantic
+            `<p><strong>The Importance of Semantics:</strong></p>
+            <p>Why is semantic search important and how does it differ from traditional keyword search?</p>
+            <p>While keyword search excels at matching keywords, it lacks the ability to understand the underlying meaning of words nor the search context.</p>
+            <p>For instance, it can readily find summer tops but might fail to search for related terms like swimming suits or proactively understand the context, such as if the user is looking for attire for a beach party.</p>
+            <p>As search expectations evolve, demanding more intelligence for tasks like summarization and recommendations, Vector Search, focusing on semantic search, emerges as the solution. It transforms data into meaningful embeddings, enabling a deeper understanding of user intent.</p>`,
+            
+            // Slide 7: How it Works
+            `<p><strong>High-Level Search Pipeline:</strong></p>
+            <p>So, how does Vector Search work? Let's explain the process at a high level.</p>
+            <p><strong>Step one:</strong> encode data into vectors by using AI models called Embedding Models.</p>
+            <p><strong>Step two:</strong> create an index to enable fast and scalable Vector Search.</p>
+            <p><strong>Step three:</strong> search the Vector Space to find information that is similar to the query.</p>`,
+            
+            // Slide 8: Two Perspectives
+            `<p><strong>Perspectives & Lifecycle:</strong></p>
+            <p>A slightly more detailed view from two perspectives.</p>
+            <p>Build the Vector Search at development time: This involves generating embeddings, building, and deploying an index.</p>
+            <p>Query the Vector Space at serving time: This involves encoding a query, searching the Vector Space, and serving results.</p>`,
+            
+            // Slide 9: The Book Index Analogy
+            `<p><strong>Intuitive Analogies:</strong></p>
+            <p>Let's use a book index as an analogy.</p>
+            <p>Encoding data is like generating a list of keywords from the book.</p>
+            <p>Indexing is like creating an indexing system, such as pairing each keyword with pages.</p>
+            <p>Searching is like finding the keyword based on a search mechanism, such as alphabetical order.</p>
+            <p>To accomplish this process, you must overcome two major obstacles:</p>
+            <p>First, how to encode data. More specifically, how to convert multimodal data to a representation that captures semantic meanings.</p>
+            <p>And second, how to index and search data. More specifically, how to build a search space that enables fast and efficient search.</p>
+            <p>To address these challenges, let's explore the technologies of Embeddings and Vector Search, respectively. These two technologies also lay the foundation for many other modern AI and machine learning applications, such as large language models and generative AI.</p>`,
+            
+            // Slide 10: Embeddings Cover
+            `<p><strong>Embeddings Overview:</strong></p>
+            <p>Following an overview of the vector search process in the previous lesson, you dive into the first step, encoding with embeddings.</p>
+            <p>Embeddings address the initial technical challenge of encoding data into a representation that captures semantic meaning.</p>`,
+            
+            // Slide 11: Text to Numbers Challenge
+            `<p><strong>Formatting Unstructured Media:</strong></p>
+            <p>Although multimodal data, including text, images, audio, video, and code, can be converted into vector embeddings, let's focus on text embeddings as an example.</p>
+            <p>The challenge is, again, how to represent text in a numeric format while retaining its meaning.</p>
+            <p>This challenge can be further divided into two sub-problems:</p>
+            <p>One, how do you turn text to numbers that retain meaning? In essence, these numbers should reflect semantic relationships between words, indicating their similarity in meaning.</p>
+            <p>And two, how do you turn text into numbers that can be fed into a machine learning model? A machine learning model normally requires the input to be relatively dense vectors. An overly sparse matrix might lead to model overfitting.</p>`,
+            
+            // Slide 12: One-Hot Encoding
+            `<p><strong>One-Hot Encoding Mechanics:</strong></p>
+            <p>Let's start with the basic vectorization techniques. For example, an intuitive technique called one-hot encoding. With this technique, you one-hot encode each word in your vocabulary.</p>
+            <p>Consider the sentence, 'a dog is chasing a person.' After tokenization, which divides the sentence into smaller digestible units, and preprocessing, which leaves the root in keywords, the sentence can be represented by three words: dog, chase, person.</p>
+            <p>Assume you have a vocabulary that includes six words: dog, chase, person, my, cat, and run (which in production can easily be tens of thousands). You then place a one to the position that corresponds to the word, and zero to the rest of the positions.</p>
+            <p>By conducting one-hot encoding, you turn each word into a vector and convert the sentence into a matrix that a machine learning model ingests.</p>
+            <p>What are the benefits of one-hot encoding? It's intuitive to understand and easy to implement.</p>
+            <p>However, let's also acknowledge the disadvantages. Recall the two sub-challenges of text representation. One-hot encoding has two main issues: First of all, this representation does not convey any relationship between words. Second, the generated matrix is high-dimensional and sparse, which leads to overfitting of the machine learning model. The dimensions of each vector depend on the size of the vocabulary, which can easily be tens of thousands. Also, most of the values of each vector are zeros, which means that this is a super-sparse representation.</p>`,
+            
+            // Slide 13: Intuition of Embeddings
+            `<p><strong>Semantic Vector Math:</strong></p>
+            <p>To solve these problems, you explore a new approach called text embeddings or word embeddings.</p>
+            <p>Let's start with intuition to see how you can encode text to numbers that convey meanings using text embedding.</p>
+            <p>Let's ask the question, how would you describe a dog? How about their breeds? Physical stats, such as height and weight, hair color and length, relationship to you, their behaviors... you get the idea. You can easily think of at least 20 different dimensions to describe a dog.</p>
+            <p>How do you describe a word then? For example, the word 'queen.' How do you convey the nature of it, its origin and the sense of belonging, excitement and trust associated with this word by using quantitative measurements? You can use dimensions and, in math, a vector space.</p>
+            <p>You can now generate an idea: How about representing a word in a vector space with dimensions to describe its properties? Not only that, you want the distance between the words to indicate the semantic similarities between them. For example, queen and king are close to each other but are far from apple. Additionally, you want this representation to capture the analogy between words. For example, the distance between king and queen is similar to the distance between man and woman.</p>
+            <p>Now you have king minus man plus woman equals queen. Isn't it amazing to play with words in the same way you play with numbers?</p>`,
+            
+            // Slide 14: Dense vs Sparse
+            `<p><strong>Dimensions & Spacing:</strong></p>
+            <p>Text embedding is a technique to encode text into meaningful vectors.</p>
+            <p>This technique allows you to represent text using low-dimensional dense vectors, also known as dense embeddings.</p>
+            <p>In contrast to sparse embeddings like one-hot encoding discussed earlier, you don't need the vector size as big as 20,000. Instead, you have between single-digit dimensions for small datasets and four-digit dimensions for large datasets.</p>
+            <p>Each dimension is supposed to capture a feature of a word. A higher-dimensional embedding captures detailed relationships between words. However, it takes more data and resources to train.</p>
+            <p>Additionally, you don't have sparse vectors anymore. The cells of a vector in text embeddings normally contain values. More importantly, the vectors capture the relationships between words where similar words have a similar encoding. Text embedding is sometimes referred to as distributed representation, indicating that the meanings of a word are distributed across dimensions.</p>`,
+            
+            // Slide 15: pre-trained embeddings
+            `<p><strong>Model APIs:</strong></p>
+            <p>You now understand the idea of text embedding, but how can you develop such an encoding system to convert text to vectors?</p>
+            <p>Instead of manually specifying the values for the embedding, you train a neural network to learn those numbers.</p>
+            <p>Neural networks have been used to train text embeddings, which include a variety of algorithms or models, such as the popular Word2Vec by Google, GloVe by Stanford, and FastText by Meta.</p>
+            <p>Training on a large corpus typically requires a great deal of computational resources. Fortunately, you do not have to train the neural networks yourself. Instead, you can use pre-trained embedding models by calling APIs. Google provides optimized Text Embedding and Multimodal Embedding models that allow you to convert text and images into a shared vector space instantly.</p>`,
+            
+            // Slide 16: RAG Cover
+            `<p><strong>RAG Overview:</strong></p>
+            <p>You've mastered semantic search and even built your own intelligent search using Vertex AI Vector Search. Remarkable!</p>
+            <p>Now, let's explore how to apply this powerful technology, specifically using it in RAG, to address AI hallucination issues.</p>`,
+            
+            // Slide 17: Grounding Problem
+            `<p><strong>The Root of Hallucinations:</strong></p>
+            <p>Remember those initial search scenarios? You wanted to plan an epic 10-day vacation. Imagine asking an AI chatbot to cross-reference your PTO balance, ongoing tasks, and travel alerts. Without access to your company's policies and real-time travel data, the chatbot would likely fall short.</p>
+            <p>This is precisely where RAG, or Retrieval Augmented Generation, steps into the spotlight.</p>
+            <p>Have you ever worried about AI hallucinations? A situation where an AI, perhaps a chatbot, confidently delivers a completely inaccurate response? This can leave you, the user, feeling uncertain. Can you really trust AI?</p>
+            <p>AI hallucination is a grounding problem that arises because large language models, LLMs, have an understanding limited to their training data. Consequently, LLMs may lack awareness of an organization's specific data, industry knowledge, or real-time information. Furthermore, they cannot verify the accuracy of the training data. They often assume prompts are true and are unable to request contextual information.</p>`,
+            
+            // Slide 18: Hallucination Solutions
+            `<p><strong>Remediation Pathways:</strong></p>
+            <p>What can be the solutions?</p>
+            <p><strong>Fine-tuning:</strong> Retrain LLMs with new, specific data. While effective, this can be costly due to the extensive data and computational resources required.</p>
+            <p><strong>Human review:</strong> Have humans verify the AI's responses. This increases accuracy, but can be expensive and time-consuming, and it's not always feasible to catch every instance of hallucination.</p>
+            <p><strong>Prompt engineering:</strong> Carefully craft prompts with updated instructions to guide the AI. This can help reduce hallucinations by steering the AI, but its effectiveness is limited to scalability.</p>
+            <p>What if you use RAG with VectorSearch to provide additional real-time fact checks for LLMs?</p>`,
+            
+            // Slide 19: RAG Analogy
+            `<p><strong>Open-Book Exam:</strong></p>
+            <p>Let's talk more about RAG.</p>
+            <p>RAG is an architecture, or a framework, that combines the strengths of both retrieval-based technology and generative AI models.</p>
+            <p>Retrieval-based technology, like VectorSearch, is excellent at finding specific, factual information from a large corpus of documents. However, such technology doesn't generate novel text or synthesize information in a human-like way.</p>
+            <p>Generative AI models, like LLMs, are excellent at generating coherent, fluent, and creative text. However, LLMs' knowledge is limited to their training data, which can become outdated, and they are prone to hallucinating information.</p>
+            <p>RAG bridges this gap. It effectively acts as an open-book exam for the LLM. Instead of forcing the LLM to rely solely on its memory, RAG gives it the ability to look up information from an external textbook or library before answering.</p>`,
+            
+            // Slide 20: Architecture Comparison
+            `<p><strong>RAG Technical Implementation:</strong></p>
+            <p>VectorSearch plays a critical role in enabling the information retrieval function in RAG. Wherever contextual information needs to be retrieved swiftly and accurately, VectorSearch is the key.</p>
+            <p>Let's use Google Cloud's LLM, Gemini, to explain this process.</p>
+            <p>Think of a standalone LLM before RAG. You ask a question, the LLM generates a response based on what it already knows, and you get the answer. For example, you may wonder about the most recent travel alert. The LLM answers based on pre-trained knowledge, which can already be outdated.</p>
+            <p>Now let's add RAG to the mix: First, encode new information into vector embeddings. Then, index vectors to form a vector database. Convert questions into embeddings as well. Search the vector database for items that are similar to the query. Retrieve the top k results by semantic similarity. Finally, pass your question to the LLM along with the retrieved results, allowing it to generate a better answer that incorporates updated information.</p>
+            <p>When you combine the search capability with the verification ability to ensure the freshness and the accuracy of data, the search becomes more reliable and trustworthy. This is sometimes called a grounded agent.</p>`,
+            
+            // Slide 21: Hybrid Cover
+            `<p><strong>Hybrid Search Overview:</strong></p>
+            <p>Building on your understanding of RAG and how vector search powered real-time fact-checking combats AI hallucinations, you now face an exciting challenge: How to supercharge vector search to be both incredibly insightful, grasping the nuances of meaning, and lightning fast at pinpointing exact keywords.</p>
+            <p>This is hybrid search, the puzzle you will unravel in this lesson.</p>`,
+            
+            // Slide 22: The Hybrid Challenge
+            `<p><strong>The Search Dilemma:</strong></p>
+            <p>While semantic search excels at understanding the meaning and context of words, it struggles with out-of-domain information, data the embedding model hasn't been trained on, such as a brand new product name or a recently released barcode.</p>
+            <p>That's where hybrid search comes in. By combining semantic and traditional keyword search, you achieve the best of both worlds.</p>
+            <p>Semantic search effectively handles nuanced, contextual queries, while keyword search accurately captures specific out-of-domain terms. This hybrid approach ensures a more comprehensive and precise search experience.</p>
+            <p>Google Search, which integrated semantic search with the RankBrain model in 2015, is a popular hybrid search system. This enhanced its existing keyword search algorithm and significantly improved search quality.</p>`,
+            
+            // Slide 23: Sparse Vector Mechanics
+            `<p><strong>Keyword Indexing:</strong></p>
+            <p>Constructing a hybrid search engine used to be a formidable task, requiring the building and maintenance of two distinct search engines, followed by complex merging and re-ranking of results.</p>
+            <p>Vertex AI Vector Search has revolutionized hybrid search, making it easier than ever to build a custom system. Let's delve into its mechanics.</p>
+            <p>Keyword vector search follows the same encode, index, and search process as semantic search. Keyword search is also called token-based search because it breaks text into tokens. The first step is encoding. Keyword search uses a concept similar to one-hot encoding, but with key improvements. Instead of a simple yes-no, the encoding counts token frequency, and a weighting algorithm like TF-IDF is applied to emphasize important words.</p>
+            <p>TF-IDF assesses a word's importance within a document relative to a corpus by weighing both common and rare words. Since a vocabulary can contain tens of thousands of words, each resulting vector has many dimensions with mostly zero values. This is called sparse embedding.</p>`,
+            
+            // Slide 24: RRF Re-ranking
+            `<p><strong>Merging Rankings with RRF:</strong></p>
+            <p>Once the text is encoded into sparse embeddings, the second step is indexing to organize these embeddings. Texts with similar keyword distributions have neighboring embeddings, enabling matching in the third step.</p>
+            <p>With search results from both semantic and keyword search, the final and additional step is to re-rank these results using an algorithm called Reciprocal Rank Fusion, RRF.</p>
+            <p>RRF is a sophisticated method to combine multiple search result lists into a single improved list. Instead of simple aggregation, RRF elevates items that rank highly in any of the lists by using the reciprocal of their rank. Consequently, items that consistently rank well across different sources, or achieve a very high rank in just one source, are prioritized.</p>`,
+            
+            // Slide 25: Implementation on Google Cloud
+            `<p><strong>Developer APIs:</strong></p>
+            <p>Thanks to the power of APIs, you don't need to worry about creating and searching through separate vector spaces. The APIs abstract these complexities, making it seem as if you're creating sparse embeddings for keyword search and dense embeddings for semantic search, followed by a single indexing and search process with integrated result ranking.</p>
+            <p>First, you build a keyword search, often called token-based search, using Vertex AI Vector Search with a simple dataset of 200 Google Merch shop items. Start by using a vectorizer like TF-IDF from scikit-learn. For example, the text 'Chrome Dino Pin' is fed into the vectorizer, and the output is its sparse embedding. Next, generate a sparse embedding for each item, store it in a JSON file in GCS, and create a vector index with Vertex AI Vector Search.</p>
+            <p>To query this, create a hybrid query object containing the sparse embedding of your search text.</p>`,
+            
+            // Slide 26: Interpreting Results
+            `<p><strong>Final Unified Output:</strong></p>
+            <p>Now you build hybrid search with Vertex AI Vector Search by combining the strengths of both keyword and semantic search. With Vertex AI Embeddings API, you generate text embeddings, also known as dense embeddings, for any given text.</p>
+            <p>The dense and sparse embeddings are stored in a JSON file, which is used to build the vector index. After the index is built, it can be deployed to an endpoint. To perform a hybrid search, create a hybrid query object that encapsulates both embedding types, executing a search query leveraging both.</p>
+            <p>Here's the result of the hybrid search. As you can see, the items with higher similarity for both dense and sparse embeddings appear at the top of the list, such as Google Blue Kids sunglasses. Items similar to either the dense or sparse embeddings follow. For example, Google White Classic Youth Tea is ranked in the middle because, while it doesn't contain the keyword kids, 'youth tea' is semantically similar enough to be included.</p>
+            <p>Hybrid search enables rapid finding of similar items. Now it's time for hands-on practice: generating sparse/dense embeddings, creating a hybrid search index, running a hybrid query, and ranking results.</p>`
+        ];
+
+        // State variables
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const notesContent = document.getElementById('notes-content');
+        const navIndicator = document.getElementById('nav-indicator');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const toggleNotesBtn = document.getElementById('toggle-notes-btn');
+        const presenterNotesSidebar = document.getElementById('presenter-notes-sidebar');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+        // Functions
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update notes
+            const notesIndex = slides[currentSlide].getAttribute('data-notes-index');
+            notesContent.innerHTML = speakerNotes[parseInt(notesIndex)];
+
+            // Update navigation bar indicator
+            navIndicator.textContent = `Slide ${currentSlide + 1} of ${slides.length}`;
+
+            // Disable/enable buttons
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        });
+
+        toggleNotesBtn.addEventListener('click', () => {
+            presenterNotesSidebar.classList.toggle('hidden');
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            }
+        });
+
+        // Fullscreen handler
+        fullscreenBtn.addEventListener('click', () => {
+            const wrapper = document.getElementById('slide-wrapper');
+            if (!document.fullscreenElement) {
+                wrapper.requestFullscreen().catch(err => {
+                    alert(`Error entering full screen mode: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Initial setup
+        updateSlide();
+    </script>
+</body>
+</html>
